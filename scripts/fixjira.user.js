@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Fix Jira
 // @namespace      http://github.com/danburke/
-// @include        http://bugtrack.riverdeep.net/browse/EDSFT-*
+// @include        http://jira/browse/*
 // ==/UserScript==
 
 // update this above in the @include section
@@ -30,10 +30,7 @@ GM_wait();
 // All your GM code must be inside this function
 function runCode() {
 
-	// Add a comment form to the left column on view issue
-	var id = $("input[type=hidden]").attr("value");
-	var commentForm='<tr><td><img height="8" width="8" border="0" align="absmiddle" src="/images/icons/bullet_creme.gif"/><b>Comment</b>:<br/><form action="/secure/AddComment.jspa" method="post" name="jiraform" ><textarea name="comment" id="comment" rows="10" wrap="virtual" cols="" class="textarea"></textarea><input id="id" name="id" value="'+id+'" type="hidden"/><input name="Add " value="Add " accesskey="S" title="Press Alt+S to submit form" class="spaced" type="submit"/></form><br/></td></tr>';
-	$("#operationsSection tbody").children(":last-child").after(commentForm);
+
 
 	// Add an issue link before  the description, makes it easier to copy and paste into emails etc.
 	$("b a:contains('"+issuePrefix+"')").clone().css("font-size","15px").css("text-decoration","none").insertAfter("h3 img[@src=/images/icons/link_out_bot.gif]")
