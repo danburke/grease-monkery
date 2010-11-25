@@ -1,65 +1,49 @@
 // ==UserScript==
-// @name           Fix Jira
-// @namespace      http://github.com/danburke/
-// @include        http://jira/browse/*
+// @name		Fix Jira
+// @namespace	http://github.com/danburke/
+// @include		http://jira.hmhpub.com/browse/*
+// @require		http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js
+// @require		http://datejs.googlecode.com/files/date.js
 // ==/UserScript==
 
-// update this above in the @include section
-var issuePrefix = "EDSFT";	
 
-// Add jQuery
-var GM_JQ = document.createElement('script');
-GM_JQ.src = 'http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js';
-GM_JQ.type = 'text/javascript';
-document.getElementsByTagName('head')[0].appendChild(GM_JQ);
-
-var GM_JQ_UI = document.createElement('script');
-GM_JQ_UI.src = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.5.2/jquery-ui.min.js';
-GM_JQ_UI.type = 'text/javascript';
-document.getElementsByTagName('head')[0].appendChild(GM_JQ_UI);
-// Check if jQuery's loaded
-function GM_wait() {
-	if(typeof unsafeWindow.jQuery == 'undefined'|| unsafeWindow.jQuery.resizeable == 'undefined' ) { 
-		window.setTimeout(GM_wait,100); 
-	}else { 
-		$ = unsafeWindow.jQuery; runCode(); 
-	}
-}
-GM_wait();
-
-// All your GM code must be inside this function
-function runCode() {
-
-
-
-	// Add an issue link before  the description, makes it easier to copy and paste into emails etc.
-	$("b a:contains('"+issuePrefix+"')").clone().css("font-size","15px").css("text-decoration","none").insertAfter("h3 img[@src=/images/icons/link_out_bot.gif]")
+(function() {
 
 	// Make attachment links open in  a new tab
 	$("a[href*=attachment]").attr("target","_blank");
-}
+	
+	
+	// Add a link to view the source for an issue
+	var issueKeyMatcher = new RegExp("^\/browse\/(.*)$");
+	var m = issueKeyMatcher .exec(document.location.pathname);
+	if(m != null){
+		var issueKey = m[1];
+		$("#operationsSection tr:last").after("<tr><td class='lazyOperation'><img width='8' height='8' border='0' align='absmiddle' alt='' src='/images/icons/bullet_creme.gif'><b> <a id='action_id_2' title='View the Source for this issue in Fisheye' href='https://dubsvn.hmco.com/fisheye/search/TXLA-Application/?comment="+issueKey+"' target='_blank'>View Source</a></b></td></tr>");
+	}
 
+	$('.date').each(function(i){
+		var re = new RegExp(".*(\\d\\d:\\d\\d [AP]M).*", "g");
+		var old = $(this).html();
+		var matches = re.exec(old);
+		d = Date.parseExact(matches[1], "hh:mm tt");
+		console.log(matches[1]);
+		if(d){
+		console.log(d);
+			// Change this for your timezone difference from the Jira server. 
+			d = d.add({hours:5});
+			console.log(d);
+			$(this).text(old + " (" + d.toString("HH:mm tt IST")  +")");
+		}
+	});
+	
+	
+	// Make external links open in a new tab
+	$("a").filter("a[href^='http://']").not("a[href^='http://jira.hmhpub.com/']").attr("target", "_blank"); 
+	
+	// Identify new tab links
+	$("a[target=_blank]").css({'text-decoration':'none', 'border-bottom':'1px dashed black'}) ;
 	
 
 
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-  
+}());
 
